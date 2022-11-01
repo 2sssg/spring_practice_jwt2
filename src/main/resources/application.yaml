@@ -1,0 +1,31 @@
+spring:
+  datasource:
+    username: sa
+    password:
+    url: jdbc:h2:mem:testdb
+    driver-class-name: org.h2.Driver
+    hikari:
+      jdbc-url: jdbc:h2:mem:testdb
+  jpa:
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.H2Dialect
+
+  jackson:
+    deserialization:
+      fail-on-unknown-properties : true
+
+
+logging:
+  level:
+    org:
+      springframework.security: DEBUG
+      hibernate.SQL: DEBUG
+    type.descriptor.sql.BasicBinder: TRACE
+
+my-app:
+  password: 123
+  admin-username: admin
+  manager-username: manager
+  user-username: user
+  email: temp@temp.temp
