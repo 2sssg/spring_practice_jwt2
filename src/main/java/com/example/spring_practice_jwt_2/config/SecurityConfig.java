@@ -1,13 +1,16 @@
 package com.example.spring_practice_jwt_2.config;
 
 import com.example.spring_practice_jwt_2.filter.CustomFilter1;
+import com.example.spring_practice_jwt_2.jwt.JwtAuthenticationFilter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.boot.autoconfigure.security.servlet.PathRequest;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityCustomizer;
+import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.header.HeaderWriterFilter;
@@ -32,6 +35,7 @@ public class SecurityConfig {
 	@Bean
 	public SecurityFilterChain filterChain(HttpSecurity httpSecurity) throws Exception {
 
+
 		httpSecurity
 				.addFilterBefore(new CustomFilter1(), HeaderWriterFilter.class);
 
@@ -42,6 +46,8 @@ public class SecurityConfig {
 				.addFilter(corsFilter) // @CrossOrigin(인증 x) , 시큐리티 필터에 등록
 				.formLogin().disable()
 				.httpBasic().disable()
+				.apply(new MyCustomDsl())
+				.and()
 				.authorizeRequests()
 					.antMatchers("/api/v1/user/**")
 						.access("hasRole('ROLE_USER') or hasRole('ROLE_MANAGER') or hasRole('ROLE_ADMIN')")
@@ -55,5 +61,16 @@ public class SecurityConfig {
 		;
 
 		return httpSecurity.build();
+	}
+
+
+	public static class MyCustomDsl extends AbstractHttpConfigurer<MyCustomDsl, HttpSecurity> {
+
+		@Override
+		public void configure(HttpSecurity httpSecurity) throws Exception {
+
+			AuthenticationManager authenticationManager = httpSecurity.getSharedObject(AuthenticationManager.class);
+			httpSecurity.addFilter(new JwtAuthenticationFilter(authenticationManager));
+		}
 	}
 }
