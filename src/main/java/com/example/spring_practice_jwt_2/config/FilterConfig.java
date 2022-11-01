@@ -9,13 +9,13 @@ import org.springframework.context.annotation.Configuration;
 @Configuration
 public class FilterConfig {
 
-	@Bean
-	public FilterRegistrationBean<CustomFilter1> customFilterFilterRegistrationBean1() {
-		FilterRegistrationBean<CustomFilter1> bean = new FilterRegistrationBean<>(new CustomFilter1());
-		bean.addUrlPatterns("/*");
-		bean.setOrder(0);
-		return bean;
-	}
+//	@Bean
+//	public FilterRegistrationBean<CustomFilter1> customFilterFilterRegistrationBean1() {
+//		FilterRegistrationBean<CustomFilter1> bean = new FilterRegistrationBean<>(new CustomFilter1());
+//		bean.addUrlPatterns("/*");
+//		bean.setOrder(0);
+//		return bean;
+//	}
 
 	@Bean
 	public FilterRegistrationBean<CustomFilter2> customFilterFilterRegistrationBean2() {
