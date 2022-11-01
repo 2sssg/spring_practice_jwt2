@@ -20,7 +20,7 @@ public class SecurityConfig {
 		return (web -> web
 				.ignoring()
 				.antMatchers("/favicon")
-				.antMatchers("h2-console")
+				.antMatchers("/h2-console/**")
 				.requestMatchers(PathRequest.toStaticResources().atCommonLocations()));
 	}
 
