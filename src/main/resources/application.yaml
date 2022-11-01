@@ -14,7 +14,9 @@ spring:
   jackson:
     deserialization:
       fail-on-unknown-properties : true
-
+  h2:
+    console:
+      enabled: true
 
 logging:
   level:
