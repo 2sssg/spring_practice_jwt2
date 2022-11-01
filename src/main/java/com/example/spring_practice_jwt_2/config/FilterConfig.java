@@ -17,11 +17,11 @@ public class FilterConfig {
 //		return bean;
 //	}
 
-	@Bean
-	public FilterRegistrationBean<CustomFilter2> customFilterFilterRegistrationBean2() {
-		FilterRegistrationBean<CustomFilter2> bean = new FilterRegistrationBean<>(new CustomFilter2());
-		bean.addUrlPatterns("/*");
-		bean.setOrder(1);
-		return bean;
-	}
+//	@Bean
+//	public FilterRegistrationBean<CustomFilter2> customFilterFilterRegistrationBean2() {
+//		FilterRegistrationBean<CustomFilter2> bean = new FilterRegistrationBean<>(new CustomFilter2());
+//		bean.addUrlPatterns("/*");
+//		bean.setOrder(1);
+//		return bean;
+//	}
 }

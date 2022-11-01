@@ -2,6 +2,8 @@ package com.example.spring_practice_jwt_2.config;
 
 import com.example.spring_practice_jwt_2.filter.CustomFilter1;
 import com.example.spring_practice_jwt_2.jwt.JwtAuthenticationFilter;
+import com.example.spring_practice_jwt_2.jwt.JwtAuthorizationFilter;
+import com.example.spring_practice_jwt_2.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.boot.autoconfigure.security.servlet.PathRequest;
 import org.springframework.context.annotation.Bean;
@@ -21,7 +23,9 @@ import org.springframework.web.filter.CorsFilter;
 @RequiredArgsConstructor
 public class SecurityConfig {
 
-	private final CorsFilter corsFilter;
+	private final CorsConfig corsConfig;
+
+	private final UserRepository userRepository;
 
 	@Bean
 	public WebSecurityCustomizer webSecurityCustomizer() {
@@ -36,27 +40,24 @@ public class SecurityConfig {
 	public SecurityFilterChain filterChain(HttpSecurity httpSecurity) throws Exception {
 
 
-		httpSecurity
-				.addFilterBefore(new CustomFilter1(), HeaderWriterFilter.class);
-
+//		httpSecurity.addFilterBefore(new CustomFilter1(), HeaderWriterFilter.class);
 		httpSecurity
 				.csrf().disable()
 				.sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
 				.and()
-				.addFilter(corsFilter) // @CrossOrigin(인증 x) , 시큐리티 필터에 등록
 				.formLogin().disable()
 				.httpBasic().disable()
 				.apply(new MyCustomDsl())
 				.and()
-				.authorizeRequests()
-					.antMatchers("/api/v1/user/**")
-						.access("hasRole('ROLE_USER') or hasRole('ROLE_MANAGER') or hasRole('ROLE_ADMIN')")
-					.antMatchers("/api/v1/manager/**")
-						.access("hasRole('ROLE_MANAGER') or hasRole('ROLE_ADMIN')")
-					.antMatchers("/api/v1/admin/**")
-						.access("hasRole('ROLE_ADMIN')")
-					.anyRequest()
-						.permitAll()
+				.authorizeRequests(authroize ->
+						authroize.antMatchers("/api/v1/user/**")
+							.access("hasRole('ROLE_USER') or hasRole('ROLE_MANAGER') or hasRole('ROLE_ADMIN')")
+						.antMatchers("/api/v1/manager/**")
+							.access("hasRole('ROLE_MANAGER') or hasRole('ROLE_ADMIN')")
+						.antMatchers("/api/v1/admin/**")
+							.access("hasRole('ROLE_ADMIN')")
+						.anyRequest().permitAll()
+				)
 
 		;
 
@@ -64,13 +65,16 @@ public class SecurityConfig {
 	}
 
 
-	public static class MyCustomDsl extends AbstractHttpConfigurer<MyCustomDsl, HttpSecurity> {
+	public class MyCustomDsl extends AbstractHttpConfigurer<MyCustomDsl, HttpSecurity> {
 
 		@Override
 		public void configure(HttpSecurity httpSecurity) throws Exception {
 
 			AuthenticationManager authenticationManager = httpSecurity.getSharedObject(AuthenticationManager.class);
-			httpSecurity.addFilter(new JwtAuthenticationFilter(authenticationManager));
+			httpSecurity
+					.addFilter(corsConfig.corsFilter())
+					.addFilter(new JwtAuthenticationFilter(authenticationManager))
+					.addFilter(new JwtAuthorizationFilter(authenticationManager, userRepository));
 		}
 	}
 }

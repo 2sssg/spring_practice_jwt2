@@ -24,7 +24,7 @@ public class CustomFilter1 implements Filter {
 		// 토큰 : tempToken
 		if (httpServletRequest.getMethod().equals("POST")) {
 			String headerAuth = httpServletRequest.getHeader("Authorization");
-			if (headerAuth.equals("tempToken")) {
+			if (headerAuth != null && headerAuth.equals("tempToken")) {
 				filterChain.doFilter(httpServletRequest, httpServletResponse);
 			} else {
 				PrintWriter outPrintWriter = httpServletResponse.getWriter();

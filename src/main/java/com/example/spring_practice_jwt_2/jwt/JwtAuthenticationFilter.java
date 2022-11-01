@@ -1,15 +1,16 @@
 package com.example.spring_practice_jwt_2.jwt;
 
+import com.auth0.jwt.JWT;
+import com.auth0.jwt.algorithms.Algorithm;
 import com.example.spring_practice_jwt_2.auth.PrincipalDetails;
 import com.example.spring_practice_jwt_2.model.User;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import java.io.BufferedReader;
 import java.io.IOException;
+import java.util.Date;
 import javax.servlet.FilterChain;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import lombok.NoArgsConstructor;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -51,7 +52,17 @@ public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilte
 	protected void successfulAuthentication(HttpServletRequest request, HttpServletResponse response, FilterChain chain,
 			Authentication authResult) throws IOException, ServletException {
 
+		PrincipalDetails principalDetails = (PrincipalDetails) authResult.getPrincipal();
+
+		String jwtToken = JWT.create()
+						.withSubject("tokenSubject")
+						.withExpiresAt(new Date(System.currentTimeMillis() + (1000 * 60 * 10)))
+						.withClaim("id", principalDetails.getUser().getId())
+						.withClaim("username", principalDetails.getUsername())
+						.sign(Algorithm.HMAC512("cos"))
+				;
+
 		System.out.println("successfulAuthentication 실행");
-		super.successfulAuthentication(request, response, chain, authResult);
+		response.addHeader("Authorization", "Bearer " + jwtToken);
 	}
 }
